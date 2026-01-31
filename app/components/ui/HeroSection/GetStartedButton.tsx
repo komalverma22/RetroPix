@@ -1,16 +1,13 @@
 'use client';
-
+import { Button } from "@/components/ui/8bit/button"
 export default function GetStartedButton() {
   return (
-    <button
-      className="px-8 py-4 rounded-full border-4 border-[#035DA5] bg-[#8FD14F] text-[#035DA5] font-bold hover:bg-[#F77FBE] hover:border-[#F77FBE] hover:text-white transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
-      style={{
-        fontFamily: "'Pixelify Sans', sans-serif",
-        fontSize: '24px',
-        letterSpacing: '2%',
-      }}
-    >
-      Get Started
-    </button>
+ <Button 
+  borderColor="bg-[#035DA5]"
+  className=" bg-[#AAF48B] text-[#035DA5] border-2 border-[#035DA5] py-6 text-xl font-bold hover:bg-[#7BC13C] hover:text-[#035DA5] hover:translate-y-1 transition-all shadow-[0_8px_0_0_#035DA5] hover:shadow-[0_4px_0_0_#035DA5] hover:bg-opacity-90 "
+  style={{ fontFamily: "'Press Start 2P', cursive" }}
+>
+  Get Started
+</Button>
   );
 }

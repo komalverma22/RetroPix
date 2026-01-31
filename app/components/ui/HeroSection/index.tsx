@@ -20,7 +20,7 @@ export default function HeroSection() {
       </div>
 
       {/* Hero Content - positioned on top of image */}
-      <div className="absolute inset-0  flex flex-col items-center justify-center z-20">
+     <div className="absolute inset-0 flex flex-col items-center z-20 pt-16 sm:pt-20 md:pt-24 lg:pt-28 xl:pt-46">
         {/* Hero Heading */}
         <HeroHeading />
 

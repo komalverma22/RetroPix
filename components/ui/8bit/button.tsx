@@ -38,10 +38,12 @@ export interface BitButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   ref?: React.Ref<HTMLButtonElement>;
+  borderColor?: string;
 }
 
-function Button({ children, asChild, ...props }: BitButtonProps) {
+function Button({ children, asChild, borderColor, ...props }: BitButtonProps) {
   const { variant, size, className, font } = props;
+  const borderClass = borderColor || "bg-foreground dark:bg-ring";
 
   const hasBorder =
     variant !== "ghost" && variant !== "link" && size !== "icon";
@@ -66,16 +68,16 @@ function Button({ children, asChild, ...props }: BitButtonProps) {
           {variant !== "ghost" && variant !== "link" && size !== "icon" && (
             <>
               {/* Pixelated border */}
-              <div className="absolute -top-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute -top-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute -bottom-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute -bottom-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute bottom-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute bottom-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-1.5 -left-1.5 h-[calc(100%-12px)] w-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-1.5 -right-1.5 h-[calc(100%-12px)] w-1.5 bg-foreground dark:bg-ring" />
+              <div className={`absolute -top-1.5 w-1/2 left-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute -top-1.5 w-1/2 right-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute -bottom-1.5 w-1/2 left-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute -bottom-1.5 w-1/2 right-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute top-0 left-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute top-0 right-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute bottom-0 left-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute bottom-0 right-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute top-1.5 -left-1.5 h-[calc(100%-12px)] w-1.5 ${borderClass}`} />
+              <div className={`absolute top-1.5 -right-1.5 h-[calc(100%-12px)] w-1.5 ${borderClass}`} />
               {variant !== "outline" && (
                 <>
                   {/* Top shadow */}
@@ -108,16 +110,16 @@ function Button({ children, asChild, ...props }: BitButtonProps) {
           {variant !== "ghost" && variant !== "link" && size !== "icon" && (
             <>
               {/* Pixelated border */}
-              <div className="absolute -top-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute -top-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute -bottom-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute -bottom-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute bottom-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute bottom-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-1.5 -left-1.5 h-[calc(100%-12px)] w-1.5 bg-foreground dark:bg-ring" />
-              <div className="absolute top-1.5 -right-1.5 h-[calc(100%-12px)] w-1.5 bg-foreground dark:bg-ring" />
+              <div className={`absolute -top-1.5 w-1/2 left-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute -top-1.5 w-1/2 right-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute -bottom-1.5 w-1/2 left-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute -bottom-1.5 w-1/2 right-1.5 h-1.5 ${borderClass}`} />
+              <div className={`absolute top-0 left-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute top-0 right-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute bottom-0 left-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute bottom-0 right-0 size-1.5 ${borderClass}`} />
+              <div className={`absolute top-1.5 -left-1.5 h-[calc(100%-12px)] w-1.5 ${borderClass}`} />
+              <div className={`absolute top-1.5 -right-1.5 h-[calc(100%-12px)] w-1.5 ${borderClass}`} />
               {variant !== "outline" && (
                 <>
                   {/* Top shadow */}
