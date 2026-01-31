@@ -14,7 +14,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full px-12 py-5 flex items-center justify-between z-50">
       {/* Brand Name */}
-      <Link href="/" className={`font-bold text-2xl md:text-[21px]  text-[#02121E] ${pressStart.className}`}
+      <Link href="/" className={`font-bold text-2xl md:text-[21px] text-[#02121E] ${pressStart.className}`}
       >
         RetroPix
       </Link>
