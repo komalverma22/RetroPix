@@ -6,7 +6,7 @@ import FAQItems from './FAQItems';
 export default function FAQ() {
   return (
   <section
-  className="w-full py-20 md:py-32 px-4 md:px-8 bg-center bg-no-repeat"
+  className="w-full py-20 md:py-35 px-4 md:px-8 bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/faqBg.png')",
     backgroundSize: 'cover',

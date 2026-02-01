@@ -52,7 +52,7 @@ export default function FAQItems() {
             onClick={() => setOpenId(openId === item.id ? null : item.id)}
             className="w-full px-6 md:px-8 py-5 md:py-6 flex items-center justify-between hover:bg-[#D0E5FF] transition-colors"
             style={{
-              cursor: 'pointer',
+                cursor: 'pointer',
             }}
           >
             <span
@@ -82,7 +82,7 @@ export default function FAQItems() {
           {/* Answer */}
           {openId === item.id && (
             <div
-              className="px-6 md:px-8 pb-6 md:pb-8 border-t-2"
+              className="px-6 md:px-8 py-6 md:py-3 border-t-2"
               style={{
                 borderColor: '#035DA5',
                 backgroundColor: '#F5F9FF',
@@ -92,7 +92,7 @@ export default function FAQItems() {
                 style={{
                   fontFamily: "'Pixelify Sans', sans-serif",
                   fontSize: 'clamp(13px, 2vw, 16px)',
-                  color: '#035DA5',
+                  color: '#01234B',
                   lineHeight: '1.6',
                 }}
               >
