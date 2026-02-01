@@ -13,9 +13,9 @@ const pressStart = Press_Start_2P({
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 w-full px-12 py-5 flex items-center justify-between z-50 backdrop-blur-md bg-[#E4F1FE]">
+    <nav className="fixed top-0 left-0 w-full px-3 sm:px-12 py-5 flex items-center justify-between z-50 backdrop-blur-md bg-[#E4F1FE]">
       {/* Brand Name */}
-      <Link href="/" className={`font-bold text-2xl md:text-[21px] text-[#02121E] ${pressStart.className}`}
+      <Link href="/" className={`font-bold text-sm sm:text-2xl md:text-[21px] text-[#02121E] ${pressStart.className}`}
       >
         RetroPix
       </Link>
