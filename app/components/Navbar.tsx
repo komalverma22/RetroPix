@@ -19,19 +19,18 @@ export default function Navbar() {
         RetroPix
       </Link>
 
-      {/* Navigation Links */}
       <div className="hidden lg:flex gap-12 absolute left-1/2 transform -translate-x-1/2">
-        <Link href="#home" className="text-[#02121E] transition-colors"
+        <Link href="/" className="text-[#02121E] transition-colors hover:text-[#035DA5]"
           style={{ fontFamily: "'Pixelify Sans'", fontSize: '26px', letterSpacing: '-1%' }}
         >
           Home
         </Link>
-        <Link href="#features" className="text-[#02121E]"
+        <Link href="/uploadImg" className="text-[#02121E] transition-colors hover:text-[#035DA5]"
           style={{ fontFamily: "'Pixelify Sans'", fontSize: '26px', letterSpacing: '-1%' }}
         >
           Upload
         </Link>
-      <Link href="#features" className="text-[#02121E]"
+        <Link href="/#faq" className="text-[#02121E] transition-colors hover:text-[#035DA5]"
           style={{ fontFamily: "'Pixelify Sans'", fontSize: '26px', letterSpacing: '-1%' }}
         >
           FAQ
@@ -39,19 +38,21 @@ export default function Navbar() {
       </div>
 
       {/* Star the Repo Button */}
-      <Button 
-  variant="outline"
-  className='bg-transparent text-[#02121E] flex items-center gap-2'
-  style={{ fontFamily: "'Pixelify Sans'", fontSize: '21px', letterSpacing: '-1%' }}
->
-  <Image 
-    src="/githubStar.png" 
-    alt="star" 
-    width={20} 
-    height={20}
-  />
-  Star the repo
-</Button>
+      <Link href="https://github.com/komalverma22/RetroPix" target="_blank" rel="noopener noreferrer">
+        <Button 
+          variant="outline"
+          className='bg-transparent text-[#02121E] flex items-center gap-2 hover:text-[#035DA5]'
+          style={{ fontFamily: "'Pixelify Sans'", fontSize: '21px', letterSpacing: '-1%' }}
+        >
+          <Image 
+            src="/githubStar.png" 
+            alt="star" 
+            width={20} 
+            height={20}
+          />
+          Star the repo
+        </Button>
+      </Link>
     </nav>
   );
 }
