@@ -29,7 +29,7 @@ export default function Navbar() {
         <Link href="#features" className="text-[#02121E]"
           style={{ fontFamily: "'Pixelify Sans'", fontSize: '26px', letterSpacing: '-1%' }}
         >
-          Features
+          Upload
         </Link>
       <Link href="#features" className="text-[#02121E]"
           style={{ fontFamily: "'Pixelify Sans'", fontSize: '26px', letterSpacing: '-1%' }}
