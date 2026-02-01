@@ -6,7 +6,7 @@ export default function WhyChooseContent() {
         {/* Left side - Description box */}
       <div className="flex-1">
         <div
-          className="rounded-3xl w-[782px] p-8 md:p-10 relative"
+          className="rounded-3xl w-[782px] p-8 md:p-10 relative mt-[-70px]"
           style={{
             backgroundColor: '#4E72C0',
             border: '3px solid #01234B',
