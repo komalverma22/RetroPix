@@ -42,8 +42,8 @@ export default function Navbar() {
       <Link href="https://github.com/komalverma22/RetroPix" target="_blank" rel="noopener noreferrer">
         <Button 
           variant="outline"
-          className='bg-transparent text-[#02121E] flex items-center gap-2 hover:text-[#035DA5]  hover:bg-[#AAF48B] 
-transition-colors duration-300'
+          className='bg-transparent text-[#02121E] flex items-center gap-1 sm:gap-2 hover:text-[#035DA5]  hover:bg-[#AAF48B] 
+transition-colors duration-300 text-[15px] sm:text-[21px]'
           style={{ fontFamily: "'Pixelify Sans'", fontSize: '21px', letterSpacing: '-1%' }}
         >
           <Image 

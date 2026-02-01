@@ -3,7 +3,7 @@
 export default function WhyChooseHeading() {
   return (
     <h2
-      className="text-5xl md:text-[46px] font-medium text-center py-20 md:py-14"
+      className="text-[30px] md:text-[46px] font-medium text-center py-5 md:py-14"
       style={{
         fontFamily: "'Press Start 2P', cursive",
         color: '#FDFFFF',

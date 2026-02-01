@@ -6,7 +6,7 @@ export default function WhyChooseContent() {
         {/* Left side - Description box */}
       <div className="flex-1">
         <div
-          className="rounded-3xl w-[782px] p-8 md:p-10 relative mt-[-70px]"
+          className="rounded-3xl w-[350px] md:w-[782px] p-5 md:p-10 relative  mt-[-0px] md:mt-[-70px]"
           style={{
             backgroundColor: '#4E72C0',
             border: '3px solid #01234B',
@@ -16,11 +16,11 @@ export default function WhyChooseContent() {
         >
            
           <p
-            className="text-lg md:text-xl leading-relaxed"
+            className="text-sm md:text-[22px] leading-relaxed"
             style={{
               fontFamily: "'Press Start 2P', cursive",
               color: '#ffffff',
-              fontSize: '22px',
+             
               lineHeight: '1.8',
             }}
           >
@@ -53,18 +53,17 @@ export default function WhyChooseContent() {
       </div>
 
       {/* Right side - Pixel art image */}
-      <div className="flex-1 flex justify-center mt-[-95px]">
+  <div className="flex-1 flex justify-center mt-[-95px] hidden lg:flex">
+  <img
+    src="/paintImg.png"
+    alt="Retro pixel art palette"
+    className="w-full h-auto max-w-xs md:max-w-[489px]"
+    style={{
+      imageRendering: 'pixelated',
+    }}
+  />
+</div>
 
-          <img
-            src="/paintImg.png"
-            alt="Retro pixel art palette"
-            className="w-full h-auto max-w-xs md:max-w-[489px]"
-            style={{
-            imageRendering: 'pixelated',
-            }}
-          />
-       
-      </div>
     </div>
   );
 }

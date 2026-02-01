@@ -9,7 +9,7 @@ import Galleryy from '../CircularGallery';
 export default function Gallery() {
   return (
     <section
-      className="w-full py-20 md:py-12 px-4 relative"
+      className="w-full py-0 md:py-12 px-4 relative"
       style={{
         backgroundColor: '#4E72C0',
       }}
