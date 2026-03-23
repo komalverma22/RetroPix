@@ -456,6 +456,8 @@ export default function UploadImgPage() {
         @media (max-width: 600px) {
           .pix-layout {
             display: flex;
+           align-items: center;
+           padding-top:20px;
             flex-direction: column;
             gap: 12px;
           }
@@ -526,7 +528,19 @@ export default function UploadImgPage() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '22px' ,paddingTop: 80}}>
           <p style={{ fontFamily: "", fontSize: '11px', color: '#01234B', letterSpacing: '0.3em', marginBottom: '5px' }}>✦ PHOTO EDITOR ✦</p>
-          <h1 style={{ fontFamily: "'Press Start 2P', cursive", fontSize: 'clamp(22px,5vw,42px)', color: '#035DA5', fontWeight: 300, margin: 0, lineHeight: 1.1 , letterSpacing: '-1.4px' }}>Pixelify Your Image</h1>
+       <h1
+  style={{
+    fontFamily: "'Press Start 2P', cursive",
+    fontSize: 'clamp(16px, 4vw, 36px)', // 👈 updated
+    color: '#035DA5',
+    fontWeight: 300,
+    margin: 0,
+    lineHeight: 1.1,
+    letterSpacing: '-1.4px'
+  }}
+>
+  Pixelify Your Image
+</h1>
           {/*  style={{
               fontFamily: "'Press Start 2P', cursive",
               fontSize: '30px',
@@ -650,11 +664,11 @@ export default function UploadImgPage() {
                 {/* Action buttons */}
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button onClick={() => { setUploadedImage(null); setProcessedDataUrl(null); setTextDecorations([]); setEmojiDecorations([]); setMobilePanel(null); }}
-                    style={{ flex: 1, padding: '11px', borderRadius: '11px', border: '1.5px solid #e8d8d4', background: 'white', color: '#9b7b74', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', minWidth: 0 }}>
+                    style={{ flex: 1, padding: '11px', borderRadius: '11px', border: '1.5px solid #e8d8d4', background: 'white', color: '#01234B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', minWidth: 0 }}>
                     ↩ Change
                   </button>
                   <button onClick={handleDownload}
-                    style={{ flex: 2, padding: '11px 16px', borderRadius: '11px', border: 'none', background: 'linear-gradient(135deg,#d4847a,#c96ea0)', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 18px rgba(212,132,122,0.36)', minWidth: 0 }}
+                    style={{ flex: 2, padding: '11px 16px', borderRadius: '11px', border: 'none', background: '#4E72C0', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 18px rgba(212,132,122,0.36)', minWidth: 0 }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                     ⬇ Download
                   </button>

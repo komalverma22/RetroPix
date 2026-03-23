@@ -36,7 +36,7 @@ const CARD = {
 const LABEL = {
   fontFamily: "'Playfair Display', serif",
   fontSize: '11px',
-  color: '#d4847a',
+  color: '#01234B',
   letterSpacing: '0.18em',
   textTransform: 'uppercase' as const,
   display: 'block',
@@ -89,7 +89,7 @@ export default function DecorationPanel({
             onClick={() => setTab(t)}
             style={{
               flex: 1, padding: '8px', borderRadius: '9px', border: 'none',
-              background: tab === t ? 'linear-gradient(135deg, #d4847a, #c96ea0)' : 'transparent',
+              background: tab === t ? '#4E72C0' : 'transparent',
               color: tab === t ? 'white' : '#9b7b74',
               fontFamily: 'inherit', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
               transition: 'all 0.2s',
@@ -124,9 +124,9 @@ export default function DecorationPanel({
               <button key={f.value} onClick={() => setTextFont(f.value)}
                 style={{
                   padding: '6px 8px', borderRadius: '8px', cursor: 'pointer',
-                  border: textFont === f.value ? '1.5px solid #d4847a' : '1.5px solid #f0e0da',
-                  background: textFont === f.value ? '#fff5f3' : 'white',
-                  color: '#2d1f1a', fontSize: '12px', fontFamily: f.value,
+                  border: textFont === f.value ? '' : '1.5px solid #f0e0da',
+                  background: textFont === f.value ? '#4E72C0' : 'white',
+                  color:  textFont === f.value ? 'white' : 'black', fontSize: '12px', fontFamily: f.value,
                 }}
               >
                 {f.label}
@@ -137,14 +137,14 @@ export default function DecorationPanel({
           {/* Size + Color */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '12px' }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '11px', color: '#b09090', marginBottom: '4px' }}>Size: {textSize}px</div>
+              <div style={{ fontSize: '11px', color: 'black', marginBottom: '4px' }}>Size: {textSize}px</div>
               <input type="range" min="12" max="60" value={textSize}
                 onChange={(e) => setTextSize(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#d4847a', height: '4px' }}
+                style={{ width: '100%', accentColor: '#4E72C0', height: '4px' }}
               />
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: '#b09090', marginBottom: '4px' }}>Color</div>
+              <div style={{ fontSize: '11px', color: '#4E72C0', marginBottom: '4px' }}>Color</div>
               <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)}
                 style={{ width: '44px', height: '36px', border: '1.5px solid #f0e0da', borderRadius: '8px', cursor: 'pointer', padding: '2px' }}
               />
@@ -155,7 +155,7 @@ export default function DecorationPanel({
             onClick={handleAddText}
             style={{
               width: '100%', padding: '10px', borderRadius: '10px', border: 'none',
-              background: 'linear-gradient(135deg, #d4847a, #c96ea0)',
+              background: '#4E72C0',
               color: 'white', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               fontFamily: 'inherit', opacity: textInput.trim() ? 1 : 0.5,
             }}
@@ -164,7 +164,7 @@ export default function DecorationPanel({
           </button>
 
           {/* Hint */}
-          <p style={{ fontSize: '11px', color: '#c0a0a0', marginTop: '8px', textAlign: 'center' }}>
+          <p style={{ fontSize: '11px', color: 'black', marginTop: '8px', textAlign: 'center' }}>
             Drag text on the photo to reposition ↑
           </p>
 
@@ -215,7 +215,7 @@ export default function DecorationPanel({
 
           {/* Size Slider */}
           <div style={{ marginBottom: '12px' }}>
-            <div style={{ fontSize: '11px', color: '#b09090', marginBottom: '4px' }}>Size: {emojiSize}px</div>
+            <div style={{ fontSize: '11px', color: '', marginBottom: '4px' }}>Size: {emojiSize}px</div>
             <input type="range" min="16" max="80" value={emojiSize}
               onChange={(e) => setEmojiSize(Number(e.target.value))}
               style={{ width: '100%', accentColor: '#d4847a', height: '4px' }}
@@ -231,7 +231,7 @@ export default function DecorationPanel({
             onClick={handleAddEmoji}
             style={{
               width: '100%', padding: '10px', borderRadius: '10px', border: 'none',
-              background: 'linear-gradient(135deg, #d4847a, #c96ea0)',
+              background: '#4E72C0',
               color: 'white', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
             }}
           >
@@ -248,7 +248,7 @@ export default function DecorationPanel({
               {emojiDecorations.map((ed) => (
                 <div key={ed.id} style={{
                   display: 'flex', alignItems: 'center', gap: '4px',
-                  padding: '4px 10px', borderRadius: '20px', background: '#fdf8f6', border: '1px solid #f0e0da',
+                  padding: '4px 10px', borderRadius: '20px', background: '#4E72C0', border: '1px solid #f0e0da',
                 }}>
                   <span style={{ fontSize: '16px' }}>{ed.emoji}</span>
                   <button onClick={() => onEmojiRemove(ed.id)}
