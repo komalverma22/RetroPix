@@ -4,250 +4,154 @@ interface SettingsPanelProps {
   pixelSize: number;
   colors: number;
   styleMode: string;
-  frameIt: boolean;
   onPixelSizeChange: (value: number) => void;
   onColorsChange: (value: number) => void;
   onStyleModeChange: (mode: string) => void;
-  onFrameItChange: (value: boolean) => void;
-  onDownload: () => void;
 }
+
+const PRESETS = [
+  { name: 'Game Boy', icon: '🎮', pixelSize: 6, colors: 4 },
+  { name: '8-bit', icon: '👾', pixelSize: 10, colors: 16 },
+  { name: 'Chunky', icon: '🟫', pixelSize: 18, colors: 32 },
+  { name: 'Dreamy', icon: '✨', pixelSize: 4, colors: 128 },
+  { name: 'Duotone', icon: '🎨', pixelSize: 8, colors: 2 },
+  { name: 'Film', icon: '📽️', pixelSize: 3, colors: 64 },
+];
+
+const CARD = {
+  background: 'white',
+  borderRadius: '14px',
+  padding: '18px',
+  border: '1.5px solid #02121E',
+  boxShadow: '0 2px 12px rgba(212,132,122,0.06)',
+};
+
+const LABEL = {
+  fontFamily: "'Press Start 2P', cursive",
+  fontSize: '11px',
+  color: '#02121E',
+  letterSpacing: '-0.01em',
+  textTransform: 'uppercase' as const,
+  display: 'block',
+  marginBottom: '12px',
+};
 
 export default function SettingsPanel({
   pixelSize,
   colors,
   styleMode,
-  frameIt,
   onPixelSizeChange,
   onColorsChange,
   onStyleModeChange,
-  onFrameItChange,
-  onDownload,
 }: SettingsPanelProps) {
-  const presets = [
-    { name: 'Game Boy', mode: 'game-boy' },
-    { name: '8-bit', mode: '8-bit' },
-    { name: 'Chunky', mode: 'chunky' },
-    { name: 'Duotone', mode: 'duotone' },
-    { name: 'CGA', mode: 'cga' },
-    { name: 'B&W', mode: 'bw' },
-  ];
-
   return (
-    <div className="w-80 flex flex-col gap-6">
-      {/* Style Mode */}
-      <div className="p-4 rounded-lg" style={{ backgroundColor: '#f5f5f5', border: '2px solid #035DA5' }}>
-        <label
-          style={{
-            fontFamily: "'Press Start 2P', cursive",
-            fontSize: '12px',
-            color: '#035DA5',
-            display: 'block',
-            marginBottom: '8px',
-          }}
-        >
-          Style Mode
-        </label>
-        <select
-          value={styleMode}
-          onChange={(e) => onStyleModeChange(e.target.value)}
-          style={{
-            fontFamily: "'Press Start 2P', cursive",
-            fontSize: '12px',
-            padding: '8px',
-            width: '100%',
-            border: '2px solid #035DA5',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          <option value="standard">Standard</option>
-          <option value="enhanced">Enhanced</option>
-        </select>
-      </div>
-
-      {/* Settings */}
-      <div className="p-4 rounded-lg" style={{ backgroundColor: '#f5f5f5', border: '2px solid #035DA5' }}>
-        <label
-          style={{
-            fontFamily: "'Press Start 2P', cursive",
-            fontSize: '12px',
-            color: '#035DA5',
-            display: 'block',
-            marginBottom: '16px',
-          }}
-        >
-          Settings
-        </label>
-
-        {/* Pixel Size */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span
-              style={{
-                fontFamily: "'Press Start 2P', cursive",
-                fontSize: '10px',
-                color: '#035DA5',
-              }}
-            >
-              Pixel Size:
-            </span>
-            <span
-              style={{
-                fontFamily: "'Press Start 2P', cursive",
-                fontSize: '10px',
-                color: '#035DA5',
-              }}
-            >
-              {pixelSize}px
-            </span>
-          </div>
-          <input
-            type="range"
-            min="2"
-            max="32"
-            value={pixelSize}
-            onChange={(e) => onPixelSizeChange(Number(e.target.value))}
-            style={{
-              width: '100%',
-              accentColor: '#AAF48B',
-              cursor: 'pointer',
-            }}
-          />
-        </div>
-
-        {/* Colors */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span
-              style={{
-                fontFamily: "'Press Start 2P', cursive",
-                fontSize: '10px',
-                color: '#035DA5',
-              }}
-            >
-              Colors:
-            </span>
-            <span
-              style={{
-                fontFamily: "'Press Start 2P', cursive",
-                fontSize: '10px',
-                color: '#035DA5',
-              }}
-            >
-              {colors}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="2"
-            max="256"
-            value={colors}
-            onChange={(e) => onColorsChange(Number(e.target.value))}
-            style={{
-              width: '100%',
-              accentColor: '#AAF48B',
-              cursor: 'pointer',
-            }}
-          />
-        </div>
-      </div>
-
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {/* Quick Presets */}
-      <div className="p-4 rounded-lg" style={{ backgroundColor: '#f5f5f5', border: '2px solid #035DA5' }}>
-        <label
-          style={{
-            fontFamily: "'Press Start 2P', cursive",
-            fontSize: '12px',
-            color: '#035DA5',
-            display: 'block',
-            marginBottom: '12px',
-          }}
-        >
-          Quick Presets
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          {presets.map((preset) => (
+      <div style={CARD}>
+        <label style={LABEL}>✦ Presets</label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          {PRESETS.map((preset) => (
             <button
-              key={preset.mode}
+              key={preset.name}
               onClick={() => {
-                onStyleModeChange(preset.mode);
-                if (preset.mode === 'game-boy') onPixelSizeChange(8);
-                else if (preset.mode === '8-bit') onPixelSizeChange(12);
-                else if (preset.mode === 'chunky') onPixelSizeChange(16);
-                else if (preset.mode === 'duotone') onColorsChange(2);
-                else if (preset.mode === 'cga') onColorsChange(16);
-                else if (preset.mode === 'bw') onColorsChange(2);
+                onStyleModeChange(preset.name.toLowerCase());
+                onPixelSizeChange(preset.pixelSize);
+                onColorsChange(preset.colors);
               }}
               style={{
-                fontFamily: "'Press Start 2P', cursive",
-                fontSize: '10px',
-                padding: '8px 12px',
-                border: '2px solid #035DA5',
-                backgroundColor:
-                  styleMode === preset.mode ? '#AAF48B' : '#ffffff',
-                color: '#035DA5',
+                padding: '8px 10px',
+                borderRadius: '10px',
+                border: styleMode === preset.name.toLowerCase() ? '1.5px solid #d4847a' : '1.5px solid #f0e0da',
+                background: styleMode === preset.name.toLowerCase() ? '#fff5f3' : 'white',
                 cursor: 'pointer',
-                borderRadius: '4px',
-                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: '#2d1f1a',
+                fontFamily: 'inherit',
+                transition: 'all 0.15s',
               }}
             >
+              <span style={{ fontSize: '14px' }}>{preset.icon}</span>
               {preset.name}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Frame It */}
-      <div className="p-4 rounded-lg flex items-center gap-3" style={{ backgroundColor: '#f5f5f5', border: '2px solid #035DA5' }}>
+      {/* Pixel Size */}
+      <div style={CARD}>
+        <label style={LABEL}>✦ Pixel Size</label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <span style={{ fontSize: '13px', color: '#9b7b74' }}>Fine detail</span>
+          <span style={{
+            background: '#4E72C0',
+            color: 'white', padding: '3px 10px', borderRadius: '20px',
+            fontSize: '12px', fontWeight: 600,
+          }}>
+            {pixelSize}px
+          </span>
+          <span style={{ fontSize: '13px', color: '#9b7b74' }}>Blocky</span>
+        </div>
         <input
-          type="checkbox"
-          checked={frameIt}
-          onChange={(e) => onFrameItChange(e.target.checked)}
-          style={{
-            width: '20px',
-            height: '20px',
-            cursor: 'pointer',
-            accentColor: '#AAF48B',
-          }}
+          type="range" min="2" max="32" value={pixelSize}
+          onChange={(e) => onPixelSizeChange(Number(e.target.value))}
+          style={{ width: '100%', accentColor: '#4E72C0', cursor: 'pointer', height: '4px' }}
         />
-        <label
-          style={{
-            fontFamily: "'Press Start 2P', cursive",
-            fontSize: '10px',
-            color: '#035DA5',
-            cursor: 'pointer',
-          }}
-        >
-          Frame it
-        </label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+          {[2, 8, 16, 24, 32].map(v => (
+            <button key={v} onClick={() => onPixelSizeChange(v)}
+              style={{
+                fontSize: '10px', padding: '3px 7px', borderRadius: '6px',
+                border: pixelSize === v ? '1.5px solid #01234B' : '1.5px solid #f0e0da',
+                background: pixelSize === v ? '#4E72C0' : 'white',
+                color: pixelSize === v ? 'white' : '#9b7b74',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Download Button */}
-      <button
-        onClick={onDownload}
-        style={{
-          fontFamily: "'Press Start 2P', cursive",
-          fontSize: '12px',
-          padding: '12px 16px',
-          backgroundColor: '#AAF48B',
-          color: '#035DA5',
-          border: '3px solid #035DA5',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          transition: 'all 0.2s',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#7BC13C';
-          e.currentTarget.style.transform = 'translateY(-2px)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#AAF48B';
-          e.currentTarget.style.transform = 'translateY(0)';
-        }}
-      >
-        ⬇️ DOWNLOAD
-      </button>
+      {/* Colors */}
+      <div style={CARD}>
+        <label style={LABEL}>✦ Color Palette</label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <span style={{ fontSize: '13px', color: '#9b7b74' }}>Minimal</span>
+          <span style={{
+            background: '#4E72C0',
+            color: 'white', padding: '3px 10px', borderRadius: '20px',
+            fontSize: '12px', fontWeight: 600,
+          }}>
+            {colors} colors
+          </span>
+          <span style={{ fontSize: '13px', color: '#9b7b74' }}>Rich</span>
+        </div>
+        <input
+          type="range" min="2" max="256" value={colors}
+          onChange={(e) => onColorsChange(Number(e.target.value))}
+          style={{ width: '100%', accentColor: '#4E72C0', cursor: 'pointer', height: '4px' }}
+        />
+        <div style={{ display: 'flex', gap: '6px', marginTop: '10px' }}>
+          {[2, 8, 16, 32, 64, 256].map(v => (
+            <button key={v} onClick={() => onColorsChange(v)}
+              style={{
+                flex: 1, fontSize: '10px', padding: '3px 2px', borderRadius: '6px',
+                border: colors === v ? '1.5px solid #01234B' : '1.5px solid #f0e0da',
+                background: colors === v ? '#4E72C0' : 'white',
+                color: colors === v ? 'white' : '#9b7b74',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
