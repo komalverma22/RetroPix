@@ -19,14 +19,14 @@ export default function FooterContent() {
   ];
 
   return (
-    <div className="mb-12 md:mb-16">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-12">
+    <div className="mb-8 md:mb-16">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-8 md:gap-12">
         {/* Left - Brand */}
         <div className="flex-1">
           <p
             style={{
               fontFamily: "'Press Start 2P', cursive",
-              fontSize: '30px',
+              fontSize: 'clamp(16px, 4vw, 30px)',
               color: '#02121E',
               fontWeight: 'bold',
             }}
@@ -40,27 +40,27 @@ export default function FooterContent() {
           <p
             style={{
               fontFamily: "'Press Start 2P', cursive",
-              fontSize: '30px',
-              color: '#01234B',
-              marginBottom: '12px',
+              fontSize: 'clamp(14px, 3.5vw, 30px)',
+              color: '#02121E',
+              marginBottom: '8px',
               fontWeight: 'bold',
-            
             }}
           >
             Quick Links
           </p>
-          <div className="space-y-1">
+          <div className="space-y-0">
             {quickLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 style={{
                   fontFamily: "'Pixelify Sans', sans-serif",
-                  fontSize: '36px',
-                  color: '#02F5F87',
+                  fontSize: 'clamp(20px, 5vw, 36px)',
+                  color: '#035DA5',
                   display: 'block',
                   textDecoration: 'none',
                   transition: 'color 0.3s ease',
+                  lineHeight: '1.3',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = '#F77FBE')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = '#035DA5')}
@@ -72,7 +72,7 @@ export default function FooterContent() {
         </div>
 
         {/* Right - Social Links */}
-        <div className="flex-1 flex items-center gap-6 justify-start md:justify-end">
+        <div className="flex-1 flex items-center gap-4 md:gap-6 justify-start md:justify-end flex-wrap">
           {socialLinks.map((social) => {
             const IconComponent = social.icon;
             return (
@@ -97,7 +97,11 @@ export default function FooterContent() {
                   e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
                 }}
               >
-                <IconComponent size={50} color="#01234B" strokeWidth={2} />
+                <IconComponent
+                  style={{ width: 'clamp(28px, 7vw, 50px)', height: 'clamp(28px, 7vw, 50px)' }}
+                  color="#01234B"
+                  strokeWidth={2}
+                />
               </a>
             );
           })}
