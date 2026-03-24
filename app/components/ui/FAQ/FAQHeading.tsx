@@ -22,8 +22,9 @@ export default function FAQHeading() {
              0px  3px 0px #035DA5;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 968px) {
           .faq-heading {
+           font-size: clamp(22px, 6vw, 36px);
             text-shadow:
               -5px -5px 0px #035DA5,
               -5px  5px 0px #035DA5,
