@@ -489,9 +489,9 @@ export default function UploadImgPage() {
             transition: background 0.15s, border-color 0.15s;
           }
           .mobile-toolbar-btn.active {
-            border-color: #d4847a;
-            background: #fff5f3;
-            color: #d4847a;
+            border-color: #4E72C0;
+            background: #4E72C0;
+            color: white;
           }
           .mobile-panel {
             display: block;
@@ -575,7 +575,7 @@ export default function UploadImgPage() {
             <div className="frames-grid" style={{ display: 'flex', flexDirection: 'row', gap: '8px', overflowX: 'auto' }}>
               {FRAME_PRESETS.map((frame) => (
                 <button key={frame.id} className="frame-btn" onClick={() => setFrameType(frame.id)}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '10px 8px', borderRadius: '11px', border: frameType === frame.id ? '2px solid #d4847a' : '1.5px solid #f0e0da', background: frameType === frame.id ? '#fff5f3' : 'white', cursor: 'pointer', width: '115px', flexShrink: 0 }}>
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '10px 8px', borderRadius: '11px', border: frameType === frame.id ? '1.5px solid #01234B' : '1.5px solid #f0e0da', background: frameType === frame.id ? '' : 'white', cursor: 'pointer', width: '115px', flexShrink: 0 }}>
                   <div style={{ width: '40px', height: '40px' }}>{frame.preview}</div>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '12px', fontWeight: 600, color: '#2d1f1a' }}>{frame.name}</div>
