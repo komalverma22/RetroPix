@@ -10,6 +10,7 @@ interface DecorationPanelProps {
   onEmojiAdd: (emoji: Omit<EmojiDecoration, 'x' | 'y'>) => void;
   onTextRemove: (id: string) => void;
   onEmojiRemove: (id: string) => void;
+  onTextUpdate: (id: string, updates: Partial<TextDecoration>) => void; // ✅ ADDED
 }
 
 const EMOJI_LIST = [
@@ -50,6 +51,7 @@ export default function DecorationPanel({
   onEmojiAdd,
   onTextRemove,
   onEmojiRemove,
+  onTextUpdate, // ✅ ADDED
 }: DecorationPanelProps) {
   const [textInput, setTextInput] = useState('');
   const [textColor, setTextColor] = useState('#ffffff');
@@ -126,7 +128,7 @@ export default function DecorationPanel({
                   padding: '6px 8px', borderRadius: '8px', cursor: 'pointer',
                   border: textFont === f.value ? '' : '1.5px solid #f0e0da',
                   background: textFont === f.value ? '#4E72C0' : 'white',
-                  color:  textFont === f.value ? 'white' : 'black', fontSize: '12px', fontFamily: f.value,
+                  color: textFont === f.value ? 'white' : 'black', fontSize: '12px', fontFamily: f.value,
                 }}
               >
                 {f.label}
@@ -174,14 +176,17 @@ export default function DecorationPanel({
               {textDecorations.map((td) => (
                 <div key={td.id} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '8px 10px', borderRadius: '8px', background: '#fdf8f6', border: '1px solid #f0e0da',
+                  padding: '8px 10px', borderRadius: '8px', background: '#A6B8DF', border: '1px solid #A6B8DF',
                 }}>
-                  <span style={{ fontSize: '12px', color: td.color, fontFamily: td.fontFamily, fontWeight: 600,
-                    textShadow: '0 0 6px rgba(0,0,0,0.15)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{
+                    fontSize: '12px', color: td.color, fontFamily: td.fontFamily, fontWeight: 600,
+                    textShadow: '0 0 6px rgba(0,0,0,0.15)', flex: 1, overflow: 'hidden',
+                    textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>
                     {td.text}
                   </span>
                   <button onClick={() => onTextRemove(td.id)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e07070', fontSize: '16px', padding: '0 4px', flexShrink: 0 }}>
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#01234B', fontSize: '16px', padding: '0 4px', flexShrink: 0 }}>
                     ×
                   </button>
                 </div>
@@ -218,7 +223,7 @@ export default function DecorationPanel({
             <div style={{ fontSize: '11px', color: '', marginBottom: '4px' }}>Size: {emojiSize}px</div>
             <input type="range" min="16" max="80" value={emojiSize}
               onChange={(e) => setEmojiSize(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#d4847a', height: '4px' }}
+              style={{ width: '100%', accentColor: '#4E72C0', height: '4px' }}
             />
           </div>
 
