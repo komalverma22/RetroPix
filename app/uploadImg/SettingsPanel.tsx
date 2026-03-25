@@ -61,15 +61,15 @@ export default function SettingsPanel({
               style={{
                 padding: '8px 10px',
                 borderRadius: '10px',
-                border: styleMode === preset.name.toLowerCase() ? '1.5px solid #d4847a' : '1.5px solid #f0e0da',
-                background: styleMode === preset.name.toLowerCase() ? '#fff5f3' : 'white',
+                border: styleMode === preset.name.toLowerCase() ? '1.5px solid #4E72C0' : '1.5px solid #f0e0da',
+                background: styleMode === preset.name.toLowerCase() ? '#4E72C0' : 'white',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
                 fontSize: '12px',
                 fontWeight: 500,
-                color: '#2d1f1a',
+                color: styleMode === preset.name.toLowerCase() ? 'white' : 'black',
                 fontFamily: 'inherit',
                 transition: 'all 0.15s',
               }}

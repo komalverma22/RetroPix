@@ -549,7 +549,7 @@ export default function UploadImgPage() {
               fontWeight: 'bold',
             
             }} */}
-          <p style={{ fontSize: '13px', color: '#01234B', marginTop: '5px', fontWeight: 300 }}>Upload · Pixelate · Frame · Decorate</p>
+          {/* <p style={{ fontSize: '13px', color: '#01234B', marginTop: '5px', fontWeight: 300 }}>Upload · Pixelate · Frame · Decorate</p> */}
         </div>
 
         {/* Mobile toolbar — only visible on mobile */}
