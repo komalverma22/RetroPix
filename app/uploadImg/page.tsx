@@ -193,9 +193,10 @@ function drawFrameOnCanvas(
     ctx.shadowColor = '#7b5ea7'; ctx.shadowBlur = 14;
     ctx.strokeStyle = '#7b5ea7'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.roundRect(4, 4, w - 8, h - 8, 8); ctx.stroke();
-    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+    ctx.shadowColor = '#ff6eb4'; ctx.shadowBlur = 10;
     ctx.strokeStyle = '#ff6eb4'; ctx.lineWidth = 1; ctx.globalAlpha = 0.5;
     ctx.beginPath(); ctx.roundRect(10, 10, w - 20, h - 20, 5); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
     ctx.font = `${outerPad * 0.56}px serif`;
     ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.fillText('✨', 8, 8);
     ctx.textAlign = 'right'; ctx.fillText('⭐', w - 8, 8);
@@ -223,6 +224,48 @@ function drawFrameOnCanvas(
   }
 }
 
+// ── Helper: bake text & emoji decorations onto an existing dataUrl ──────────
+function bakeDecorationsOntoUrl(
+  sourceUrl: string,
+  textDecorations: TextDecoration[],
+  emojiDecorations: EmojiDecoration[]
+): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+
+      textDecorations.forEach((td) => {
+        ctx.save();
+        ctx.font = `bold ${td.fontSize * 1.5}px ${td.fontFamily}`;
+        ctx.fillStyle = td.color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowBlur = 5;
+        ctx.fillText(td.text, (td.x / 100) * img.width, (td.y / 100) * img.height);
+        ctx.restore();
+      });
+
+      emojiDecorations.forEach((ed) => {
+        ctx.save();
+        ctx.font = `${ed.fontSize * 1.5}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ed.emoji, (ed.x / 100) * img.width, (ed.y / 100) * img.height);
+        ctx.restore();
+      });
+
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.src = sourceUrl;
+  });
+}
+
 export default function UploadImgPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [pixelSize, setPixelSize] = useState(8);
@@ -231,14 +274,15 @@ export default function UploadImgPage() {
   const [frameType, setFrameType] = useState('none');
   const [textDecorations, setTextDecorations] = useState<TextDecoration[]>([]);
   const [emojiDecorations, setEmojiDecorations] = useState<EmojiDecoration[]>([]);
+  // processedDataUrl = pixelated + frame ONLY (no text) — used for live preview
   const [processedDataUrl, setProcessedDataUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<string | null>(null);
-  // Track which panel is open on mobile (settings, frames, or decorations)
   const [mobilePanel, setMobilePanel] = useState<'settings' | 'frames' | 'decorations' | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const processingRef = useRef(false);
 
+  // ── pixelateImage: NO text/emoji drawn here — keeps preview clean ──────────
   const pixelateImage = useCallback(
     (imageSrc: string, pxSize: number, colorCount: number, frame: string): Promise<string> => {
       return new Promise((resolve) => {
@@ -308,27 +352,15 @@ export default function UploadImgPage() {
           ctx.putImageData(imgData, imgOffsetX, imgOffsetY);
           ctx.restore();
 
-          textDecorations.forEach((td) => {
-            ctx.save();
-            ctx.font = `bold ${td.fontSize * 1.5}px ${td.fontFamily}`;
-            ctx.fillStyle = td.color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 5;
-            ctx.fillText(td.text, (td.x / 100) * totalW, (td.y / 100) * totalH);
-            ctx.restore();
-          });
-          emojiDecorations.forEach((ed) => {
-            ctx.save();
-            ctx.font = `${ed.fontSize * 1.5}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(ed.emoji, (ed.x / 100) * totalW, (ed.y / 100) * totalH);
-            ctx.restore();
-          });
+          // ✅ NO text/emoji drawn here — text is handled by overlay divs in preview
+          //    and by bakeDecorationsOntoUrl() at download time
 
           resolve(canvas.toDataURL('image/png'));
         };
         img.src = imageSrc;
       });
     },
-    [textDecorations, emojiDecorations]
+    [] // no textDecorations / emojiDecorations dependency — they're not used here
   );
 
   useEffect(() => {
@@ -338,7 +370,7 @@ export default function UploadImgPage() {
       setProcessedDataUrl(url);
       processingRef.current = false;
     });
-  }, [uploadedImage, pixelSize, colors, frameType, textDecorations, emojiDecorations, pixelateImage]);
+  }, [uploadedImage, pixelSize, colors, frameType, pixelateImage]);
 
   const handleImageUpload = (file: File) => {
     const reader = new FileReader();
@@ -346,10 +378,21 @@ export default function UploadImgPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleDownload = () => {
+  // ── Download: bake text onto the processed image then save ────────────────
+  const handleDownload = async () => {
     if (!processedDataUrl) return;
+
+    let finalUrl = processedDataUrl;
+
+    // Only bake if there are decorations to add
+    if (textDecorations.length > 0 || emojiDecorations.length > 0) {
+      finalUrl = await bakeDecorationsOntoUrl(processedDataUrl, textDecorations, emojiDecorations);
+    }
+
     const a = document.createElement('a');
-    a.href = processedDataUrl; a.download = 'pixelify.png'; a.click();
+    a.href = finalUrl;
+    a.download = 'pixelify.png';
+    a.click();
   };
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent, id: string) => {
@@ -361,7 +404,10 @@ export default function UploadImgPage() {
       const rect = container.getBoundingClientRect();
       const cx = 'touches' in ev ? ev.touches[0].clientX : (ev as MouseEvent).clientX;
       const cy = 'touches' in ev ? ev.touches[0].clientY : (ev as MouseEvent).clientY;
-      return { x: Math.max(3, Math.min(97, ((cx - rect.left) / rect.width) * 100)), y: Math.max(3, Math.min(97, ((cy - rect.top) / rect.height) * 100)) };
+      return {
+        x: Math.max(3, Math.min(97, ((cx - rect.left) / rect.width) * 100)),
+        y: Math.max(3, Math.min(97, ((cy - rect.top) / rect.height) * 100)),
+      };
     };
     const onMove = (ev: MouseEvent | TouchEvent) => {
       const pos = getPos(ev);
@@ -370,11 +416,15 @@ export default function UploadImgPage() {
     };
     const onUp = () => {
       setIsDragging(null);
-      document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp);
-      document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onUp);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
     };
-    document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
-    document.addEventListener('touchmove', onMove, { passive: false }); document.addEventListener('touchend', onUp);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onUp);
   };
 
   const toggleMobilePanel = (panel: 'settings' | 'frames' | 'decorations') => {
@@ -391,11 +441,9 @@ export default function UploadImgPage() {
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: rgba(212,132,122,0.25); border-radius: 10px; }
 
-        /* ── Desktop: 3-column grid ── */
         .pix-layout {
           display: grid;
           grid-template-columns: 265px 1fr 210px;
-          grid-template-rows: auto;
           gap: 18px;
           align-items: start;
         }
@@ -410,28 +458,16 @@ export default function UploadImgPage() {
           overflow-y: auto;
         }
 
-        /* Mobile toolbar (hidden on desktop) */
         .mobile-toolbar { display: none; }
+        .mobile-panel { display: none; }
 
-        /* Mobile panels (hidden on desktop) */
-        .mobile-panel {
-          display: none;
-        }
-
-        /* ── Tablet: 2-column, right panel goes below ── */
         @media (max-width: 900px) {
           .pix-layout {
             grid-template-columns: 220px 1fr;
-            grid-template-rows: auto auto;
           }
           .pix-left   { grid-column: 1; grid-row: 1; }
           .pix-center { grid-column: 2; grid-row: 1; }
-          .pix-right  {
-            grid-column: 1 / -1;
-            grid-row: 2;
-          }
-
-          /* Frames panel: horizontal scrollable row on tablet */
+          .pix-right  { grid-column: 1 / -1; grid-row: 2; }
           .frames-grid {
             display: flex !important;
             flex-direction: row !important;
@@ -439,31 +475,19 @@ export default function UploadImgPage() {
             overflow-x: auto;
             padding-bottom: 6px;
           }
-          .frame-btn {
-            flex: 0 0 auto;
-            width: 130px;
-          }
-          .pix-sticky {
-            position: static;
-            max-height: none;
-          }
-          .pix-right .pix-sticky {
-            position: static;
-          }
+          .frame-btn { flex: 0 0 auto; width: 130px; }
+          .pix-sticky { position: static; max-height: none; }
         }
 
-        /* ── Mobile: single column, panels via bottom toolbar ── */
         @media (max-width: 600px) {
           .pix-layout {
             display: flex;
-           align-items: center;
-           padding-top:20px;
+            align-items: center;
+            padding-top: 20px;
             flex-direction: column;
             gap: 12px;
           }
-          /* Hide sidebar panels on mobile — shown via mobile-panel drawers instead */
           .pix-left, .pix-right { display: none; }
-
           .mobile-toolbar {
             display: flex;
             gap: 8px;
@@ -501,7 +525,6 @@ export default function UploadImgPage() {
             padding: 14px;
             overflow: hidden;
           }
-          /* Frames: horizontal scroll on mobile */
           .frames-grid {
             display: flex !important;
             flex-direction: row !important;
@@ -509,14 +532,10 @@ export default function UploadImgPage() {
             overflow-x: auto;
             padding-bottom: 4px;
           }
-          .frame-btn {
-            flex: 0 0 auto;
-            width: 115px;
-          }
+          .frame-btn { flex: 0 0 auto; width: 115px; }
           .preview-height { height: 300px !important; }
         }
 
-        /* ── Very small screens ── */
         @media (max-width: 380px) {
           .mobile-toolbar-btn { font-size: 11px; padding: 8px 5px; }
           .preview-height { height: 260px !important; }
@@ -526,33 +545,22 @@ export default function UploadImgPage() {
       <div style={{ maxWidth: '1380px', margin: '0 auto', padding: '20px 12px 80px' }}>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '22px' ,paddingTop: 80}}>
-          <p style={{ fontFamily: "", fontSize: '11px', color: '#01234B', letterSpacing: '0.3em', marginBottom: '5px' }}>✦ PHOTO EDITOR ✦</p>
-       <h1
-  style={{
-    fontFamily: "'Press Start 2P', cursive",
-    fontSize: 'clamp(16px, 4vw, 36px)', // 👈 updated
-    color: '#035DA5',
-    fontWeight: 300,
-    margin: 0,
-    lineHeight: 1.1,
-    letterSpacing: '-1.4px'
-  }}
->
-  Pixelify Your Image
-</h1>
-          {/*  style={{
-              fontFamily: "'Press Start 2P', cursive",
-              fontSize: '30px',
-              color: '#01234B',
-              marginBottom: '12px',
-              fontWeight: 'bold',
-            
-            }} */}
-          {/* <p style={{ fontSize: '13px', color: '#01234B', marginTop: '5px', fontWeight: 300 }}>Upload · Pixelate · Frame · Decorate</p> */}
+        <div style={{ textAlign: 'center', marginBottom: '22px', paddingTop: 80 }}>
+          <p style={{ fontSize: '11px', color: '#01234B', letterSpacing: '0.3em', marginBottom: '5px' }}>✦ PHOTO EDITOR ✦</p>
+          <h1 style={{
+            fontFamily: "'Press Start 2P', cursive",
+            fontSize: 'clamp(16px, 4vw, 36px)',
+            color: '#035DA5',
+            fontWeight: 300,
+            margin: 0,
+            lineHeight: 1.1,
+            letterSpacing: '-1.4px',
+          }}>
+            Pixelify Your Image
+          </h1>
         </div>
 
-        {/* Mobile toolbar — only visible on mobile */}
+        {/* Mobile toolbar */}
         {uploadedImage && (
           <div className="mobile-toolbar">
             <button className={`mobile-toolbar-btn${mobilePanel === 'settings' ? ' active' : ''}`} onClick={() => toggleMobilePanel('settings')}>⚙️ Settings</button>
@@ -561,7 +569,6 @@ export default function UploadImgPage() {
           </div>
         )}
 
-        {/* Mobile collapsible panels */}
         {uploadedImage && mobilePanel === 'settings' && (
           <div className="mobile-panel">
             <SettingsPanel pixelSize={pixelSize} colors={colors} styleMode={styleMode}
@@ -572,16 +579,16 @@ export default function UploadImgPage() {
         {uploadedImage && mobilePanel === 'frames' && (
           <div className="mobile-panel">
             <p style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '10px', color: '#d4847a', letterSpacing: '0.2em', marginBottom: '10px', textTransform: 'uppercase' }}>✦ Frame Style</p>
-            <div className="frames-grid" style={{ display: 'flex', flexDirection: 'row', gap: '8px', overflowX: 'auto' }}>
+            <div className="frames-grid">
               {FRAME_PRESETS.map((frame) => (
                 <button key={frame.id} className="frame-btn" onClick={() => setFrameType(frame.id)}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '10px 8px', borderRadius: '11px', border: frameType === frame.id ? '1.5px solid #01234B' : '1.5px solid #f0e0da', background: frameType === frame.id ? '' : 'white', cursor: 'pointer', width: '115px', flexShrink: 0 }}>
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '10px 8px', borderRadius: '11px', border: frameType === frame.id ? '1.5px solid #01234B' : '1.5px solid #f0e0da', background: frameType === frame.id ? '#4E72C0' : 'white', cursor: 'pointer', width: '115px', flexShrink: 0 }}>
                   <div style={{ width: '40px', height: '40px' }}>{frame.preview}</div>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#2d1f1a' }}>{frame.name}</div>
-                    <div style={{ fontSize: '10px', color: '#b09090' }}>{frame.description}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: frameType === frame.id ? 'white' : '#2d1f1a' }}>{frame.name}</div>
+                    <div style={{ fontSize: '10px', color: frameType === frame.id ? 'white' : '#b09090' }}>{frame.description}</div>
                   </div>
-                  {frameType === frame.id && <span style={{ color: '#d4847a', fontSize: '12px' }}>✓</span>}
+                  {frameType === frame.id && <span style={{ color: '#fff', fontSize: '12px' }}>✓</span>}
                 </button>
               ))}
             </div>
@@ -596,14 +603,15 @@ export default function UploadImgPage() {
               onEmojiAdd={(em) => setEmojiDecorations(p => [...p, { ...em, x: 50, y: 50 }])}
               onTextRemove={(id) => setTextDecorations(p => p.filter(t => t.id !== id))}
               onEmojiRemove={(id) => setEmojiDecorations(p => p.filter(e => e.id !== id))}
+              onTextUpdate={(id, updates) => setTextDecorations(p => p.map(t => t.id === id ? { ...t, ...updates } : t))}
             />
           </div>
         )}
 
-        {/* Main layout grid */}
+        {/* Main layout */}
         <div className="pix-layout">
 
-          {/* LEFT — Settings + Decorations */}
+          {/* LEFT */}
           <div className="pix-left">
             <div className="pix-sticky" style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '8px' }}>
               <SettingsPanel pixelSize={pixelSize} colors={colors} styleMode={styleMode}
@@ -615,6 +623,7 @@ export default function UploadImgPage() {
                   onEmojiAdd={(em) => setEmojiDecorations(p => [...p, { ...em, x: 50, y: 50 }])}
                   onTextRemove={(id) => setTextDecorations(p => p.filter(t => t.id !== id))}
                   onEmojiRemove={(id) => setEmojiDecorations(p => p.filter(e => e.id !== id))}
+                  onTextUpdate={(id, updates) => setTextDecorations(p => p.map(t => t.id === id ? { ...t, ...updates } : t))}
                 />
               )}
             </div>
@@ -637,39 +646,102 @@ export default function UploadImgPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
                 >
+                  {/* ✅ Shows pixelated + framed image WITHOUT text baked in */}
                   {processedDataUrl && (
-                    <img src={processedDataUrl} alt="Preview"
-                      style={{ maxWidth: '94%', maxHeight: '94%', objectFit: 'contain', imageRendering: 'pixelated', display: 'block', borderRadius: '10px', boxShadow: '0 6px 30px rgba(0,0,0,0.12)' }}
+                    <img
+                      src={processedDataUrl}
+                      alt="Preview"
+                      style={{
+                        maxWidth: '94%', maxHeight: '94%', objectFit: 'contain',
+                        imageRendering: 'pixelated', display: 'block',
+                        borderRadius: '10px', boxShadow: '0 6px 30px rgba(0,0,0,0.12)',
+                      }}
                     />
                   )}
+
+                  {/* ✅ Text overlays — shown once here, draggable, baked on download */}
                   {textDecorations.map((td) => (
-                    <div key={td.id} onMouseDown={(e) => handleDragStart(e, td.id)} onTouchStart={(e) => handleDragStart(e, td.id)}
-                      style={{ position: 'absolute', left: `${td.x}%`, top: `${td.y}%`, transform: 'translate(-50%,-50%)', fontSize: `${td.fontSize}px`, color: td.color, fontFamily: td.fontFamily, fontWeight: 'bold', textShadow: '0 2px 8px rgba(0,0,0,0.45)', userSelect: 'none', padding: '3px 8px', borderRadius: '4px', border: '1.5px dashed rgba(255,255,255,0.6)', background: isDragging === td.id ? 'rgba(255,255,255,0.2)' : 'transparent', whiteSpace: 'nowrap', zIndex: 10, cursor: 'grab', opacity: isDragging === td.id ? 0.7 : 0.95 }}>
+                    <div
+                      key={td.id}
+                      onMouseDown={(e) => handleDragStart(e, td.id)}
+                      onTouchStart={(e) => handleDragStart(e, td.id)}
+                      style={{
+                        position: 'absolute',
+                        left: `${td.x}%`, top: `${td.y}%`,
+                        transform: 'translate(-50%,-50%)',
+                        fontSize: `${td.fontSize}px`,
+                        color: td.color,
+                        fontFamily: td.fontFamily,
+                        fontWeight: 'bold',
+                        textShadow: '0 2px 8px rgba(0,0,0,0.45)',
+                        userSelect: 'none',
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        border: '1.5px dashed rgba(255,255,255,0.6)',
+                        background: isDragging === td.id ? 'rgba(255,255,255,0.2)' : 'transparent',
+                        whiteSpace: 'nowrap',
+                        zIndex: 10,
+                        cursor: 'grab',
+                        opacity: isDragging === td.id ? 0.7 : 0.95,
+                      }}
+                    >
                       {td.text}
                     </div>
                   ))}
+
+                  {/* ✅ Emoji overlays — same pattern */}
                   {emojiDecorations.map((ed) => (
-                    <div key={ed.id} onMouseDown={(e) => handleDragStart(e, ed.id)} onTouchStart={(e) => handleDragStart(e, ed.id)}
-                      style={{ position: 'absolute', left: `${ed.x}%`, top: `${ed.y}%`, transform: 'translate(-50%,-50%)', fontSize: `${ed.fontSize}px`, lineHeight: 1, userSelect: 'none', padding: '3px', border: '1.5px dashed rgba(255,255,255,0.6)', background: isDragging === ed.id ? 'rgba(255,255,255,0.2)' : 'transparent', borderRadius: '4px', zIndex: 10, cursor: 'grab', opacity: isDragging === ed.id ? 0.7 : 1 }}>
+                    <div
+                      key={ed.id}
+                      onMouseDown={(e) => handleDragStart(e, ed.id)}
+                      onTouchStart={(e) => handleDragStart(e, ed.id)}
+                      style={{
+                        position: 'absolute',
+                        left: `${ed.x}%`, top: `${ed.y}%`,
+                        transform: 'translate(-50%,-50%)',
+                        fontSize: `${ed.fontSize}px`,
+                        lineHeight: 1,
+                        userSelect: 'none',
+                        padding: '3px',
+                        border: '1.5px dashed rgba(255,255,255,0.6)',
+                        background: isDragging === ed.id ? 'rgba(255,255,255,0.2)' : 'transparent',
+                        borderRadius: '4px',
+                        zIndex: 10,
+                        cursor: 'grab',
+                        opacity: isDragging === ed.id ? 0.7 : 1,
+                      }}
+                    >
                       {ed.emoji}
                     </div>
                   ))}
+
                   {(textDecorations.length > 0 || emojiDecorations.length > 0) && (
-                    <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.42)', color: 'white', fontSize: '11px', padding: '4px 14px', borderRadius: '20px', whiteSpace: 'nowrap', backdropFilter: 'blur(6px)' }}>
+                    <div style={{
+                      position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)',
+                      background: 'rgba(0,0,0,0.42)', color: 'white', fontSize: '11px',
+                      padding: '4px 14px', borderRadius: '20px', whiteSpace: 'nowrap',
+                      backdropFilter: 'blur(6px)',
+                    }}>
                       ✦ Drag to reposition
                     </div>
                   )}
                 </div>
 
-                {/* Action buttons */}
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <button onClick={() => { setUploadedImage(null); setProcessedDataUrl(null); setTextDecorations([]); setEmojiDecorations([]); setMobilePanel(null); }}
+                  <button
+                    onClick={() => {
+                      setUploadedImage(null); setProcessedDataUrl(null);
+                      setTextDecorations([]); setEmojiDecorations([]);
+                      setMobilePanel(null);
+                    }}
                     style={{ flex: 1, padding: '11px', borderRadius: '11px', border: '1.5px solid #e8d8d4', background: 'white', color: '#01234B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', minWidth: 0 }}>
                     ↩ Change
                   </button>
-                  <button onClick={handleDownload}
-                    style={{ flex: 2, padding: '11px 16px', borderRadius: '11px', border: 'none', background: '#4E72C0', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 18px rgba(212,132,122,0.36)', minWidth: 0 }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                  <button
+                    onClick={handleDownload}
+                    style={{ flex: 2, padding: '11px 16px', borderRadius: '11px', border: 'none', background: '#4E72C0', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 18px rgba(78,114,192,0.36)', minWidth: 0 }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                     ⬇ Download
                   </button>
                 </div>
@@ -677,24 +749,22 @@ export default function UploadImgPage() {
             )}
           </div>
 
-          {/* RIGHT — Frames (desktop / tablet) */}
+          {/* RIGHT — Frames */}
           <div className="pix-right">
             <div className="pix-sticky" style={{ paddingBottom: '8px' }}>
               <p style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '10px', color: '#01234B', letterSpacing: '-0.03em', marginBottom: '10px', textTransform: 'uppercase' }}>
                 ✦ Frame Style
               </p>
-              {/* On tablet this becomes horizontal via .frames-grid CSS; on desktop it's vertical */}
               <div className="frames-grid" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {FRAME_PRESETS.map((frame) => (
                   <button key={frame.id} className="frame-btn" onClick={() => setFrameType(frame.id)}
                     style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 11px', borderRadius: '11px', border: frameType === frame.id ? '1px solid #01234B' : '1.5px solid #f0e0da', background: frameType === frame.id ? '#4E72C0' : 'white', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
                     <div style={{ width: '38px', height: '38px', flexShrink: 0 }}>{frame.preview}</div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: '12px', fontWeight: 600, color:frameType === frame.id ? 'white':'#2d1f1a',
-                          fontFamily: 'inherit' }}>{frame.name}</div>
-                      <div style={{ fontSize: '10px', color:frameType === frame.id ? 'white':'#2d1f1a', marginTop: '1px' }}>{frame.description}</div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: frameType === frame.id ? 'white' : '#2d1f1a', fontFamily: 'inherit' }}>{frame.name}</div>
+                      <div style={{ fontSize: '10px', color: frameType === frame.id ? 'white' : '#b09090', marginTop: '1px' }}>{frame.description}</div>
                     </div>
-                    {frameType === frame.id && <span style={{ marginLeft: 'auto', color: '#d4847a', fontSize: '13px', flexShrink: 0 }}>✓</span>}
+                    {frameType === frame.id && <span style={{ marginLeft: 'auto', color: '#fff', fontSize: '13px', flexShrink: 0 }}>✓</span>}
                   </button>
                 ))}
               </div>
